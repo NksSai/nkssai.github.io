@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>Gibbs Sampling与B-LDA | 今天拒绝负能量</title>
+  <meta name="description" content="" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" type="text/css" href="/css/component.css" />
+  <link rel="stylesheet" type="text/css" href="/css/screen.css" />
+  <meta name="generator" content="今天拒绝负能量">
+  <script src="http://static.duoshuo.com/embed.js"></script>
+  
+  
+  
+
+  
+
+</head>
+<body>
+<div class="container">
+    <div class="mp-pusher" id="mp-pusher">
+        <i id="scroll-up" class="fa fa-angle-up"></i>
+        <nav id="mp-menu" class="mp-menu">
+            <div class="mp-level">
+                <a data-pjax class="back-home" style="font-size: 20px" href="/"><h2 ><i class="fa fa-home"></i>
+                        Home</h2></a>
+                <ul class="first-level">
+                    <li>
+                        <a class="fa fa-archive" href="#"><i class="fa fa-angle-left">
+                            </i>&nbsp;&nbsp;归档</a>
+                        <div class="mp-level page-list">
+                            <h2 ><i class="fa fa-archive"></i>
+                                归档</h2>
+                            <a class="mp-back" href="#">back</a>
+                            <form id="search-form" action="">
+                                <input type="text" class="search search-archive" placeholder="Search.."/>
+                            </form>
+                            <ul>
+                                <div class="mp-scroll">
+                                
+                                <li class="search-archive-li mp-pjax">
+                                    <a href="/2014/09/30/Gibbs-Sampling-and-B-LDA/">Gibbs Sampling与B-LDA</a>
+                                </li>
+                                
+                                <li class="search-archive-li mp-pjax">
+                                    <a href="/2014/09/13/VB-and-LDA/">变分推断与LDA</a>
+                                </li>
+                                
+                                <li class="search-archive-li mp-pjax">
+                                    <a href="/2014/09/03/EM-and-GLAD/">EM与GLAD</a>
+                                </li>
+                                
+                                </div>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a class="fa fa-copy" href="#"><i class="fa fa-angle-left">
+                            </i>&nbsp;&nbsp;分类</a>
+
+                        <div class="mp-level page-list">
+                            <h2 ><i class="fa fa-copy"></i>
+                                分类</h2>
+                            <a class="mp-back" href="#">back</a>
+                            <form id="search-form" action="">
+                                <input type="text" class="search search-category" placeholder="Search.."/>
+                            </form>
+                            <ul>
+                                <div class="mp-scroll">
+                                
+                                <li class="search-category-li mp-pjax">
+                                    <a href="/categories/正经笔记/">&nbsp;&nbsp;&nbsp;正经笔记</a>
+                                    <small>2</small>
+                                </li>
+                                
+                                </div>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a class="fa fa-tags" href="#"><i class="fa fa-angle-left">
+                            </i>&nbsp;&nbsp;标签</a>
+                        <div class="mp-level page-list">
+                            <h2 ><i class="fa fa-tags"></i>
+                                标签</h2>
+                            <a class="mp-back" href="#">back</a>
+                            <form id="search-form" action="">
+                                <input type="text" class="search search-tag" placeholder="Search.."/>
+                            </form>
+                            <ul>
+                                <div class="mp-scroll">
+                                
+                                <li class="search-tag-li mp-pjax">
+                                    <a href="/tags/Crowdsourcing/">&nbsp;&nbsp;&nbsp;Crowdsourcing</a>
+                                    <small>1</small>
+                                </li>
+                                
+                                <li class="search-tag-li mp-pjax">
+                                    <a href="/tags/EM/">&nbsp;&nbsp;&nbsp;EM</a>
+                                    <small>1</small>
+                                </li>
+                                
+                                <li class="search-tag-li mp-pjax">
+                                    <a href="/tags/GLAD/">&nbsp;&nbsp;&nbsp;GLAD</a>
+                                    <small>1</small>
+                                </li>
+                                
+                                <li class="search-tag-li mp-pjax">
+                                    <a href="/tags/LDA/">&nbsp;&nbsp;&nbsp;LDA</a>
+                                    <small>2</small>
+                                </li>
+                                
+                                <li class="search-tag-li mp-pjax">
+                                    <a href="/tags/MCMC/">&nbsp;&nbsp;&nbsp;MCMC</a>
+                                    <small>1</small>
+                                </li>
+                                
+                                <li class="search-tag-li mp-pjax">
+                                    <a href="/tags/PGM/">&nbsp;&nbsp;&nbsp;PGM</a>
+                                    <small>1</small>
+                                </li>
+                                
+                                <li class="search-tag-li mp-pjax">
+                                    <a href="/tags/Sampling/">&nbsp;&nbsp;&nbsp;Sampling</a>
+                                    <small>1</small>
+                                </li>
+                                
+                                <li class="search-tag-li mp-pjax">
+                                    <a href="/tags/Variational-Bayes/">&nbsp;&nbsp;&nbsp;Variational-Bayes</a>
+                                    <small>1</small>
+                                </li>
+                                
+                                </div>
+                            </ul>
+                        </div>
+                    </li>
+                    
+                    <li class="mp-pjax"><a class="fa fa-user" href="/about">&nbsp;&nbsp;&nbsp;About me</a></li>
+                    <li><a class="fa fa-github" href="#">&nbsp;&nbsp;&nbsp;Github</a></li>
+
+                </ul>
+
+            </div>
+        </nav>
+        <div id="pjax">
+            <div class="pjax-hidden" style="display: none">
+                
+                    <a  data-pjax href="/2014/09/30/Gibbs-Sampling-and-B-LDA/">Gibbs Sampling与B-LDA</a>
+                
+                    <a  data-pjax href="/2014/09/13/VB-and-LDA/">变分推断与LDA</a>
+                
+                    <a  data-pjax href="/2014/09/03/EM-and-GLAD/">EM与GLAD</a>
+                
+                
+                    <a data-pjax href="/categories/正经笔记/">&nbsp;&nbsp;正经笔记</a>
+                
+                
+                    <a data-pjax href="/tags/Crowdsourcing/">&nbsp;&nbsp;Crowdsourcing</a>
+                
+                    <a data-pjax href="/tags/EM/">&nbsp;&nbsp;EM</a>
+                
+                    <a data-pjax href="/tags/GLAD/">&nbsp;&nbsp;GLAD</a>
+                
+                    <a data-pjax href="/tags/LDA/">&nbsp;&nbsp;LDA</a>
+                
+                    <a data-pjax href="/tags/MCMC/">&nbsp;&nbsp;MCMC</a>
+                
+                    <a data-pjax href="/tags/PGM/">&nbsp;&nbsp;PGM</a>
+                
+                    <a data-pjax href="/tags/Sampling/">&nbsp;&nbsp;Sampling</a>
+                
+                    <a data-pjax href="/tags/Variational-Bayes/">&nbsp;&nbsp;Variational-Bayes</a>
+                
+                <a data-pjax class="fa fa-user" href="/about">&nbsp;&nbsp;&nbsp;About me</a>
+            </div>
+            <nav class="nexus">
+                <li  style="border-left: 1px solid #c6d0da;">
+                    <a id="trigger" href="#"><i class="fa fa-bars"></i></a>
+                </li>
+                <li ><a id="nexus-back" data-pjax href="/">今天拒绝负能量</a></li>
+                
+                <div id="nav-container">
+                    <div class="post-navbar" style="line-height: 63px;display:none">
+                        <li id="navbar-title"><a href="#">Gibbs Sampling与B-LDA</a></li>
+                        <li id="navbar-toc" style="border-left: none">
+                            <a style="padding-right: 15px">
+                                <span id="toc-content" >Introduction</span><i class="fa fa-chevron-down" ></i>
+                            </a>
+                            <div class="hidden-box">
+                                <ul id="toc"></ul>
+                            </div>
+                        </li>
+                    </div>
+                </div>
+                
+            </nav>
+
+            <div class="scroller">
+            <div class="scroller-inner">
+
+
+<!-- -->
+<!--<body class="post-template">-->
+<!---->
+  
+
+<main class="content" role="main">
+    <article class="post" >
+    <span class="post-meta">
+                  <div class="tag-tile">
+                      
+                      
+                      <a data-pjax href='/tags/Sampling/' style='color:#D5D5D5'>Sampling</a>
+                      
+                      <a data-pjax href='/tags/LDA/' style='color:#D5D5D5'>LDA</a>
+                      
+                      <a data-pjax href='/tags/MCMC/' style='color:#D5D5D5'>MCMC</a>
+                      
+                      
+                  </div>
+                <h1 class="post-title" style="margin: 14px 0;color:#50585D">Gibbs Sampling与B-LDA</h1>
+
+                    <div class="post-meta">
+                        Post on<span class="fa fa-clock-o"></span>
+                        <time datetime="2014-09-29T16:00:00.000Z"
+                              itemprop="datePublished">Sep 30 2014</time>
+                    </div>
+    </span>
+
+        <section class="post-content">
+            <p>之前已经见过了变分推断这种求近似解的手段，它似乎为我们对复杂模型提供了一个漂亮的解法，但是我们也发现变分推断求解过程比较复杂，又比较依赖指数家族共轭分布（虽然非指数家族或者非共轭可解，但是手段更加复杂），MC(蒙特卡洛方法)就提供了另一种手段，其中在概率图模型上常用的就是MCMC(蒙特卡洛马尔科夫)方法，用一句话描述MCMC，就是对于在随机向量<span class="math">\(X\)</span>状态空间上的随机过程<span class="math">\({X(1),...,X(t)}\)</span>,如果给出适当的概率转移矩阵并作用于<span class="math">\(X\)</span>,就可以构造出马尔可夫链使<span class="math">\(X(t)\)</span>的分布收敛到其真实后验分布.因此,这一类算法称为MCMC算法。其中比较常见的就是Gibbs采样算法。 <a id="more"></a></p>
+<p>这里有一些有意思的前置知识。我们常说统计学分为频率学派与贝叶斯学派，频率学派认为我们要求的变量其实是个我们所未知的定值，如MLE(极大似然)，MAP(极大后验)等方法其实是求了在其定义下的最优值，MLE是使似然函数最大的值，而MAP是使后验函数最大的值，但是贝叶斯学派认为这些值本身就是个分布，此时如果还是用MLE中的概率最大的单一值的话，就是损失掉很多信息，所以取期望是个更好的选项，回忆我们在面对复杂的生成模型时写出的联合分布往往只有参数节点和观察到的节点，希望将其中的变量都给积分积掉(其实本质上就是使用其期望)，而且要注意这里的积分其实和随机变量本身是离散的还是连续的没有关系。比如对于观察到的<span class="math">\(\mathcal{X}\)</span>和我们感兴趣的<span class="math">\(p(y|\pi)\)</span>，我们往往使用</p>
+<p><span class="math">\[p(y|x) = \int p(y|\pi)p(\pi|\mathcal{X})\]</span></p>
+<p>明确了这一点，我们采用MC方法的合理性就明了了，很多积分是难求甚至是不可求的，而MC方法提供了一种通过采样接近的方法</p>
+<p><span class="math">\[\int f(x)p(x)dx = E_{p(x)}[f(x)]\simeq \frac{1}{n}\sum_{i=1}^{n}f(x_i)\]</span></p>
+<p>即通过多次采样取期望的方式估计积分值。</p>
+<p>好啦，这里我们已经有了求解积分的方法,剩下的就是对分布<span class="math">\(p(x)\)</span>采样了，面对一个复杂的生成模型，怎样才能采样出对应的分布,MCMC方法就解决了这个问题，首先重要的一点是马尔科夫链细致平稳分布，即对于满足一定性质的马氏链（我们常见的概率图模型基本都满足这个性质,详细的可以看<a href="http://web.mit.edu/~wingated/www/introductions/mcmc-gibbs-intro.pdf" target="_blank" rel="external">这篇介绍</a>）具有转移概率矩阵P,进过一定次数的迭代后，会趋于一个稳定分布。所以，对于<span class="math">\(x\)</span>来看，如果我们找到一个合适的概率转移矩阵，那么经过一定次数的迭代，我们就能获得合理的<span class="math">\(p(x)\)</span>生成<span class="math">\(x\)</span>的采样。gibbs采样就是利用这种方法求解。</p>
+<p>gibbs采样在实际应用的推导中显得较为简单，它假设对于<span class="math">\(p(x)\)</span>和<span class="math">\(p(y)\)</span>两个难求的分布，如果我们可以通过<span class="math">\(p(x)=\int p(x,y)dy\)</span>来求解，即从<span class="math">\(p(x|y=y_{i-1})\)</span>中生成<span class="math">\(x_i\)</span>，同理，对于<span class="math">\(y\)</span>也有<span class="math">\(p(y)=\int p(x,y)dx\)</span>，即<span class="math">\(p(y|x = x_i)\)</span>生成<span class="math">\(y_i\)</span>，则这种方式可以生成一个gibbs序列，在一定的迭代次数之后就会收敛到固定的分布，此时采样就可以求得我们想要的积分。 gibbs采样的形式比较简单，对于要采样的<span class="math">\(Z\)</span>，有<span class="math">\(z=&lt;z_ 0,z_1,...,z_k&gt;\)</span>，其中<span class="math">\(k&gt;1\)</span>，则我们可以</p>
+<blockquote>
+<p>初始化<span class="math">\(z_{(0)}:=&lt;z_1^{(0)},...,z_j^{(0)}&gt;\)</span><br>  for <span class="math">\(t = 1\)</span> to T do<br>    for <span class="math">\(i = 1\)</span> to k do<br>      <span class="math">\(z_i^{(t+1)}\sim P(Z_i|z_1^{(t+1)},...,z_{i-1}^{(t+1)},z_{i+1}^{(t)},...,z_k^{(t)})\)</span><br>    end for<br>  end for</p>
+</blockquote>
+<p>而</p>
+<p><span class="math">\[P(Z_i|z_1^{(t+1)},...,z_{i-1}^{(t+1)},z_{i+1}^{(t)},...,z_k^{(t)})=\frac{P(z_1^{(t+1)},...,z_{i-1}^{(t+1)},z_{i+1}^{(t)},...,z_k^{(t)})}{P(Z_i|z_1^{(t+1)},...,z_k^{(t)})}\]</span></p>
+<p>之前已经看过LDA的变分推断的推导，这里用更复杂一点的B-LDA(<a href="http://www.mysmu.edu/faculty/fdzhu/paper/SDM%2713.pdf" target="_blank" rel="external">论文戳这里</a>)为例子,先看生成模型（详细一点的读书笔记可以看<a href="http://www.crescentmoon.info/?p=525" target="_blank" rel="external">这里</a>）。</p>
+<div class="figure">
+<img src="http://nkssai.qiniudn.com/B-LDA.png">
+</div>
+<p>与LDA相比，针对twitter数据，论文进行了一些新的假设首先是简化LDA中一个文章多个主题的情况，在twitter的短文中一条推文只有一个主题，其次加入背景词，认为twitter中有一些常见的词并不是由主题生成而是由背景词生成,另一方面认为用户的行文本身其实也是由主题决定的，为此还有一个生成行为的多项分布。</p>
+<p>具体的生成过程为:</p>
+<p>对于<span class="math">\(1\leq t \leq T\)</span>，生成<span class="math">\(\phi_t \sim Dir(\beta)\)</span>,<span class="math">\(\psi_t \sim Dir(\eta)\)</span> 生成<span class="math">\(\phi&#39; \sim Dir(\beta&#39;)\)</span>,<span class="math">\(\varphi\sim Dir(\gamma)\)</span> 对于每一个用户从<span class="math">\(u=1,...,U\)</span> 利用<span class="math">\(\theta_u\sim Dir(\alpha)\)</span>生成每个用户的主体分布 对于该用户的第n个推文，<span class="math">\(n=1,...,N_u\)</span> 从该用户的<span class="math">\(\theta_u\)</span>生成该推文主题<span class="math">\(z_{u,n}\)</span> 对于每一个单词<span class="math">\(l=1,...,L_{u,n}\)</span> 生成<span class="math">\(y_{u,n,l} \sim Bernoulli(\varphi)\)</span>,来决定词是由背景词还是主题生成 当<span class="math">\(y_{u,n,l}=1\)</span>的时候，从主题中生成单词，即<span class="math">\(w_{u,n,l} \sim \phi_{z_u,n}\)</span>，当<span class="math">\(y_{u,n,l}=0\)</span>的时候，从背景词中生成单词，即<span class="math">\(w_{u,n,l}\sim \phi&#39;\)</span>。 生成用户行为<span class="math">\(b_{u,n} \sim \psi_{z_u,n}\)</span></p>
+<p>这里可以看到我们想要采样求解的隐变量决定词生成来源的<span class="math">\(y\)</span>和主题<span class="math">\(z\)</span>,首先先写出联合分布有</p>
+<p><span class="math">\[\begin{split}&amp;p(Z,Y,B,W|\alpha, \beta, \beta&#39;,\gamma,\eta) \\
+    =&amp;p(W|Z,Y,\beta, \beta&#39;)p(Y|\gamma)p(B|Z,\eta)p(Z|\alpha)\end{split}\]</span></p>
+<p>然后依次展开</p>
+<p>对于<span class="math">\(p(Z|\alpha)\)</span>有</p>
+<p><span class="math">\[\begin{split}p(Z|\alpha) &amp;= \int p(Z|\theta)p(\theta|\alpha) \\
+                        &amp;= \int \big(\prod_u^U\prod_{t}^T\theta^{n_u^t}_{t,u}\big)\big(\prod_{u}^U\frac{1}{\Delta(\alpha)}\prod_t^T\theta_{t,u}^{\alpha_t-1}\big)d\theta \\
+                        &amp;= \int\big(\prod_{u}^U\frac{1}{\Delta(\alpha)}\prod_t^T\theta_{t,u}^{n_u^t+\alpha_t-1}\big)d\theta \\
+                        &amp;= \int \prod_{u}^U\frac{\Delta(n_u^t+\alpha)}{\Delta(\alpha)}\frac{1}{\Delta(n_u^t+\alpha)}\prod_t^T\theta_{t,u}^{n_u^t+\alpha_t-1} d\theta \\
+                        &amp;= \prod_{u}^U\frac{\Delta(n_u^t+\alpha)}{\Delta(\alpha)}
+\end{split}\]</span></p>
+<p>这里我们发现由于采用了共轭的先验，所以对于参数很容易就能通过积分消掉，既能减少采样的复杂度，又能简化式子的形式。我们观察这个式子的内容，很容易就能发现，其形式的规律。通过相似的方法还能求解出其他的带超参的。</p>
+<p><span class="math">\[p(B|Z,\eta) = \int p(B|Z,\psi)p(\psi|\eta)d\psi = \prod_{t=1}^T \frac{\Delta(n_b^t+\eta)}{\Delta(\eta)}\]</span></p>
+<p><span class="math">\[p(Y|\gamma)=\frac{\Delta(n_{(.)}^y+\gamma)}{\Delta(\gamma)}\]</span></p>
+<p>这里的<span class="math">\(n_{(.)}^y\)</span>实际上是同时代表了<span class="math">\(y=1\)</span>和<span class="math">\(y=0\)</span>的情况。</p>
+<p>现在只还剩<span class="math">\(p(W|Z,Y,\beta,\beta&#39;)\)</span>，这其实是模型核心的部分，通过指示变量<span class="math">\(y\)</span>指示从背景词分布中生成，还是从主题中生成,根据之前的规律，其实我们期望积分积掉<span class="math">\(\phi\)</span>和<span class="math">\(\phi&#39;\)</span>。</p>
+<p><span class="math">\[\begin{split}p(W|Z,Y,\beta,\beta&#39;) &amp; = \int_\phi \int_{\phi&#39;} p(W|Z,Y,\beta, \beta&#39;)p(\phi|\beta)p(\phi&#39;|\beta&#39;)d\phi d\phi&#39; \\ 
+&amp;=\int_\phi \int_{\phi&#39;} (\prod_w^W\phi&#39;^{n_{y=0}^w}_w\prod_t^T\phi_t^{n^w_{t,y=1}})
+(\prod_t^T\frac{1}{\Delta(\beta)}\prod_w^W\phi_{t,w}^{\beta_{w}-1})(\prod_w^W\phi&#39;^{\beta&#39;_w-1}_w)d\phi d\phi&#39; \\
+&amp;= \frac{\Delta(n_{y=0}^w+\beta&#39;)}{\Delta(\beta&#39;)}\prod_{t=1}^T\frac{\Delta(n_{t,y=1}^w+\beta)}{\Delta(\beta)}
+\end{split}\]</span></p>
+<p>有了以上几个式子，我们就可以写出来最初的式子为</p>
+<p><span class="math">\[\begin{split}&amp;p(Z,Y,B,W|\alpha, \beta, \beta&#39;,\gamma,\eta) \\
+    &amp;=p(W|Z,Y,\beta, \beta&#39;)p(Y|\gamma)p(B|Z,\eta)p(Z|\alpha)\\
+    &amp;=\frac{\Delta(n_{(.)}^y+\gamma)}{\Delta(\gamma)}\frac{\Delta(n_{y=0}^w+\beta&#39;)}{\Delta(\beta&#39;)}\prod_{t=1}^T\frac{\Delta(n_{t,y=1}^w+\beta)}{\Delta(\beta)}\\
+    &amp;\prod_{t=1}^T \frac{\Delta(n_b^t+\eta)}{\Delta(\eta)}\prod_{u}^U\frac{\Delta(n_u^t+\alpha)}{\Delta(\alpha)}
+    \end{split}\]</span></p>
+<p>下一步就是求要采样的条件分布。联合分布中<span class="math">\(B,W\)</span>都是观察到的变量，并且我们在采样的过程中已经积分掉了参数，剩下的就是针对<span class="math">\(Z、Y\)</span>的采样对于每一个Z，由于每一个用户的每一条twitter都有自己的<span class="math">\(Z\)</span>，所以在求每一个条件分布的时候，应该对应每一个<span class="math">\(Z_{u,n}\)</span>即第u个用户的第n个推文，如果我们要剥离这条推文，那么与这条推文相关的用户行为即<span class="math">\(B_{u,n}\)</span>也应该被剥离，这里用<span class="math">\(c\)</span>代表<span class="math">\(\{u,n\}\)</span>，于是有</p>
+<p><span class="math">\[\begin{split}&amp;p(z_c|Z_{\lnot c}, W, Y, B)\\
+&amp;\propto\frac{p(Z,Y,B,W|\alpha, \beta, \beta&#39;,\gamma,\eta)}{p(Z_{\lnot c},Y,B_{\lnot c},W|\alpha, \beta, \beta&#39;,\gamma,\eta)} \\
+&amp;=\frac{\Delta(n_{z,y=1}^w+\beta)}{\Delta(n_{z,y=1,\lnot c}^w+\beta)}
+\frac{\Delta(n^b_z+\eta)}{\Delta(n^b_{z,\lnot c}+\eta)}
+\frac{\Delta(n^u_z+\alpha)}{\Delta(n_{z,\lnot c}^u+\alpha)}
+\end{split}\]</span></p>
+<p>将伽马函数消掉就可以得到最后的迭代式，只要注意到<span class="math">\(\Gamma(x + 1) = x\Gamma(x)\)</span>，就能利用各个统计量<span class="math">\(n\)</span>之间的差消掉伽马函数，得到迭代式。</p>
+<p>同理，对于指示标签<span class="math">\(y\)</span>，考虑到对于每一个词都是由<span class="math">\(y_{u,n,l}\)</span>指示的，所以应该剥离掉<span class="math">\(y_{u,n,l}\)</span>，这里用<span class="math">\(d\)</span>表示<span class="math">\({u,n,l}\)</span>。由于剥离了指示标签<span class="math">\(y_d\)</span>，其实在生成模型中与其相关的项目也是可以直接看出来的，即由<span class="math">\(y\)</span>指示的部分和生成的部分。</p>
+<p><span class="math">\[\begin{split}&amp;p(y_d|Y_{\lnot d},Z,W,B) \\
+&amp;=\frac{\Delta(n_{(.)}^y+\gamma)}{\Delta(n^y_{\lnot d}+\gamma)}\frac{\Delta(n^w_{y=0}+\beta&#39;)}{\Delta(n^w_{y=0,\lnot d}+\beta&#39;)}\prod_{t=1}^U\frac{\Delta(n^w_{t,y=1}+\beta)}{\Delta(n^w_{t,y=1,\lnot d}+\beta)}
+\end{split}\]</span></p>
+<p>这里其实包含了<span class="math">\(y=1\)</span>和<span class="math">\(y=0\)</span>两种情况，分别会导致对后面两项不同的结果，而且剥离一个<span class="math">\(y_d\)</span>其实指示对统计量造成了1的影响，所以得到的形式很简单。</p>
+<p>这样我们就得到了所有需要采样的变量的表达式，然后我们先对未知的部分随机初始化，然后通过采样的参数生成具体的分布，最后多次采样得到值就可以了，有一些要注意的是，首先由于随机初始化要经过一定的迭代次数才能达到稳态，所以最初的阶段称为<code>build-in</code>，这段时间一般对结果采样，另一方面，为了获得结果，可以每次都对变量采样，也可以隔一定的次数采样，由于其实采样的结果是分布而不是值（其实贝叶斯就是这样认为的），所以根据目的不同，其实针对结果也有很多处理的方式。而且，对于部分隐变量已知的情况（比如部分<span class="math">\(z\)</span>已知时），可以在采样中不改变标签来利用已知信息。</p>
+<p>这里我们可以发现，相比变分推断这种方法，采样的方法从形式上来看其实更加简单，但是难以直接判断收敛，但是对于分布如果是非指数家族的时候始终很实用的方法</p>
+
+        </section>
+        <hr/>
+        <nav class="pagination" style="width:auto" role="pagination">
+            
+            <a style="cursor:default" class="newer-posts" href="#">This is the First Post</a>
+            
+            <a class="share-button" data-original-title title>Share this Post</a>
+            
+            <a data-pjax class="older-posts" href="/2014/09/13/VB-and-LDA/">Next Post →</a>
+            
+        </nav>
+        <br/>
+        <br/>
+        <section id="comment">
+            <div id="comment-box"></div>
+        </section>
+
+
+    </article>
+</main>
+
+
+  
+<footer class="site-footer">
+    
+    <div class="inner">
+        <section class="copyright"><a href="/"></a> &copy; 今天拒绝负能量 2014</section>
+        <section class="poweredby">Published with <a target="_blank" href="http://hexo.io/">Hexo   </a> and Theme by <a target="_blank" href="https://github.com/yuche/hexo-theme-kael">Kael</a></section>
+    </div>
+</footer>
+</div>
+</div><!-- /scroller -->
+
+</div><!-- /pusher -->
+</div><!-- /container -->
+</div>
+
+<!-- Easter eggs -->
+
+<div class="egg animated">
+    <a id="close-button" href="#">X</a>
+    <div class="block">
+        <div class="loading">
+            <span class="ball1"></span>
+            <span class="ball2"></span>
+        </div>
+    </div>
+</div>
+  
+<script src="//cdn.staticfile.org/jquery/1.11.0/jquery.min.js"></script>
+<script>
+    if (!window.jQuery) {
+        var script = document.createElement('script');
+        script.src = "/js/jquery.min.js";
+        document.body.appendChild(script);
+    }
+</script>
+<script type="text/javascript" src="/js/lib.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/x-mathjax-config">
+$(document).on('pjax:end', function(){
+MathJax.Hub.Typeset();
+})
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+</body>
+</html>

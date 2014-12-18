@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>http://ariwaranosai.info/2014/09/13/VB-and-LDA/</loc>
+    <lastmod>2014-12-18T02:13:54.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://ariwaranosai.info/2014/09/30/Gibbs-Sampling-and-B-LDA/</loc>
+    <lastmod>2014-12-18T02:13:39.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://ariwaranosai.info/2014/09/03/EM-and-GLAD/</loc>
+    <lastmod>2014-12-18T02:10:03.000Z</lastmod>
+  </url>
+  
+</urlset>
